@@ -1,7 +1,7 @@
 What Is It?
 ===========
 
-FileInspector allows you to view the contents of a file in different data formats side-by-side. It is similar to a hex viewer, but supports additional formats such as numbers of varying sizes and endianess. It is useful for helping to reverse-engineer file formats that contain multiple data types. It was originally written to help reverse engineer the *.HUB file format used by the Hammerhead drum machine (see clawhammer.rb, http://), and then cleaned up for general use.
+FileInspector allows you to view the contents of a file in different data formats side-by-side. It is similar to a hex viewer, but supports additional formats such as numbers of varying sizes and endianess. It is useful for helping to reverse-engineer file formats that contain multiple data types. It was originally written to help reverse engineer the *.HUB file format used by the Hammerhead drum machine (see clawhammer.rb, http://github.com/jstrait/clawhammer/tree/master), and then cleaned up for general use.
 
 
 How to Install
