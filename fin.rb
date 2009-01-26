@@ -23,165 +23,7 @@
 # OTHER DEALINGS IN THE SOFTWARE.
 
 require 'optparse'
-
-class FileInspector
-  BLOCK_SIZE = 512
-  LOWERCASE_A = 97
-  BYTE_COLUMN_WIDTH = 8
-  COLUMN_PADDING = 3
-  NOT_ENOUGH_BYTES_MSG = ".."
-  PRETTY_CHARS = ["[NUL]", "[SOH]", "[STX]", "[ETX]", "[EOT]", "[ENQ]", "[ACK]", "[BEL]",
-                   "[BS]",  "[TAB]", "[LF]",  "[VT]",  "[FF]",  "[CR]",  "[SO]",  "[SI]",
-                   "[DLE]", "[DC1]", "[DC2]", "[DC3]", "[DC4]", "[NAK]", "[SYN]", "[ETB]",
-                   "[CAN]", "[EM]",  "[SUB]", "[ESC]", "[FS]",  "[GS]",  "[RS]",  "[US]",
-                   "[SPACE]", "!",   "\"",    "#",     "$",     "%",     "&",     "'",
-                   "(",     ")",     "*",     "+",     ",",     "-",     ".",     "/",
-                   "0",     "1",     "2",     "3",     "4",     "5",     "6",     "7",
-                   "8",     "9",     ":",     ";",     "<",     "=",     ">",     "?",
-                   "@",     "A",     "B",     "C",     "D",     "E",     "F",     "G",
-                   "H",     "I",     "J",     "K",     "L",     "M",     "N",     "O",
-                   "P",     "Q",     "R",     "S",     "T",     "U",     "V",     "W",
-                   "X",     "Y",     "Z",     "[",     "\\",    "]",     "^",     "_",
-                   "`",     "a",     "b",     "c",     "d",     "e",     "f",     "g",
-                   "h",     "i",     "j",     "k",     "l",     "m",     "n",     "o",
-                   "p",     "q",     "r",     "s",     "t",     "u",     "v",     "w",
-                   "x",     "y",     "z",     "{",     "|",     "}",     "~",     "[DEL]"]
-  
-  def initialize(format_str)
-    if format_str == "" || format_str.class != String
-      raise StandardError, "Must provide a list of display formats"
-    end
-    
-    @column_descriptors = []
-    @bytes_per_row = 10000   # Larger than any format byte length
-    
-    format_str.each_byte{|format|
-      new_column_descriptor = build_column_descriptor(format.chr)
-      @column_descriptors.push(new_column_descriptor)
-      
-      if new_column_descriptor[:byteLength] < @bytes_per_row
-        @bytes_per_row = new_column_descriptor[:byteLength]
-      end
-    }
-    
-    # Must occur after each column format is built, because until then
-    # the number of bytes per display row isn't known.
-    @column_descriptors.each {|column_descriptor|
-      unpack_str = column_descriptor[:unpackStr]
-      column_descriptor[:unpackStr] += unpack_items_per_byte(unpack_str, column_descriptor[:byteLength]).to_s
-    }
-  end
-  
-  def display_header()
-    puts ""
-    row = " " * BYTE_COLUMN_WIDTH
-    @column_descriptors.each {|column_descriptor|
-      row += column_descriptor[:unpackStr][0].chr.rjust(column_descriptor[:displayWidth] + COLUMN_PADDING, " ")
-    }
-    puts row
-    puts "=" * row.length
-  end
-  
-  def display(start_byte, end_byte, data)
-    if start_byte > end_byte
-      raise StandardError, "Starting byte is after than ending byte"
-    end
-    
-    display_header()
-    
-    end_byte += 1
-    display_byte_index = start_byte
-    seek_byte_index = start_byte
-    
-    while seek_byte_index < end_byte
-      bytes_in_current_block = end_byte - seek_byte_index
-      
-      if bytes_in_current_block < BLOCK_SIZE
-        block = data[seek_byte_index, bytes_in_current_block]
-      else
-        bytes_in_current_block = BLOCK_SIZE
-        block = data[seek_byte_index, BLOCK_SIZE]
-      end
-      
-      cols = []
-      @column_descriptors.each {|column_descriptor|
-        col_data = consume(block, column_descriptor[:unpackStr], column_descriptor[:byteLength])
-        cols.push(col_data)
-      }
-    
-      (0...cols[0].length).each { |row_index|
-        # Output current row
-        row = "#{display_byte_index}:".rjust(BYTE_COLUMN_WIDTH, " ")
-        i = 0
-        cols.each{|col|
-          row += (" " * COLUMN_PADDING) + col[row_index].to_s.rjust(@column_descriptors[i][:displayWidth], " ")
-          i += 1
-        }
-        puts row
-        
-        display_byte_index += @bytes_per_row
-        seek_byte_index += @bytes_per_row
-      }
-    end
-  end
-
-  def consume(block, unpack_format, format_length)
-    arr = []
-    i = 0
-    while i < block.length
-      rows = block[i, format_length].unpack(unpack_format)
-      if rows[0] == nil
-        rows[0] = NOT_ENOUGH_BYTES_MSG
-      end
-      arr += rows
-      i += format_length
-    end
-    
-    if unpack_format[0] == LOWERCASE_A  # 'a'
-      arr = arr.map {|char|
-        pretty_char = PRETTY_CHARS[char[0]]
-        (pretty_char != nil) ? pretty_char : char
-      }
-    end
-    
-    return arr
-  end
-
-  def build_column_descriptor(format)
-    # Unsupported: M, m, P, p, U, u, w, X, x, Z, @, A
-    column_descriptor = case format
-      when "a" then                     { :byteLength => 1, :displayWidth => 7,  :caption => "Alpha" }
-      when "B", "b" then                { :byteLength => 1, :displayWidth => 8,  :caption => "Binary" }
-      when "C", "c" then                { :byteLength => 1, :displayWidth => 3,  :caption => "Int8" }
-      when "D", "d", "E", "e", "G" then { :byteLength => 8, :displayWidth => 22, :caption => "" }
-      when "F", "f", "g" then           { :byteLength => 4, :displayWidth => 22, :caption => "" }
-      when "H", "h" then                { :byteLength => 1, :displayWidth => 2,  :caption => "Hex" }
-      when "I", "i" then                { :byteLength => 4, :displayWidth => 10, :caption => "Int32" }
-      when "L", "l" then                { :byteLength => 4, :displayWidth => 10, :caption => "Int32" }
-      when "N", "Q", "q", "V" then      { :byteLength => 8, :displayWidth => 16, :caption => "int16" }
-      when "n", "S", "s", "v" then      { :byteLength => 2, :displayWidth => 6,  :caption => "" }
-      else raise StandardError, "Unsupported format: #{format}"
-    end
-    
-    column_descriptor[:unpackStr] = format
-    return column_descriptor
-  end
-  
-  # The number to append after the unpack format.
-  # For example, 8.
-  def unpack_items_per_byte(format, format_length)
-    if format == "B" || format == "b"
-      byte_length = 8
-    elsif format == "H" || format == "h"
-      # Each hex character is 4 bits
-      byte_length = 2
-    else
-      byte_length = (format_length / @bytes_per_row).to_i
-    end
-    
-    return byte_length
-  end
-end
+require 'FileInspector'
 
 def read_file(file_name)
   #blockSize = 1_048_576
@@ -203,7 +45,7 @@ end
 
 def parse_arguments()
   params = {}
-
+  
   if ARGV[0] == "-bytes"
     params[:byteRange] = ARGV[1].split(":")
     params[:fileName] = ARGV[2]
@@ -220,7 +62,7 @@ end
 def main()
   params = parse_arguments()
   file_contents = read_file(params[:fileName])
-
+  
   start_byte = params[:byteRange][0].to_i
   end_byte = params[:byteRange][1]
   if(end_byte == nil)
@@ -232,11 +74,11 @@ def main()
     puts "Warning: ending byte is greater than length of file"
     end_byte = file_contents.length - 1
   end
-
+  
   puts "Start Byte: #{start_byte}, End Byte: #{end_byte}"
-
-  fin = FileInspector.new(params[:columnFormats])
-  fin.display(start_byte, end_byte, file_contents)
+  
+  inspector = FileInspector.new(params[:columnFormats])
+  inspector.display(start_byte, end_byte, file_contents)
 end
 
 main()
