@@ -136,24 +136,32 @@ class TestFileInspector < Test::Unit::TestCase
     assert_equal(fin.consume("a" * 601, "s1", 2), ([24929] * 300) + ['..'])
   end
   
-  def test_unpack_items_per_byte
-    fin = FileInspector.new('abcd')
+  def test_items_to_unpack_per_byte
+    inspector = FileInspector.new('abcd')
     
-     assert_equal(fin.unpack_items_per_byte('b', 1), 8)
-     assert_equal(fin.unpack_items_per_byte('b', 10), 8)
-     assert_equal(fin.unpack_items_per_byte('b', 12.3), 8)
+    assert_equal(inspector.items_to_unpack_per_byte('b', 1), 8)
+    assert_equal(inspector.items_to_unpack_per_byte('b', 10), 8)
+    assert_equal(inspector.items_to_unpack_per_byte('b', 12.3), 8)
      
-     assert_equal(fin.unpack_items_per_byte('B', 1), 8)
-     assert_equal(fin.unpack_items_per_byte('B', 10), 8)
-     assert_equal(fin.unpack_items_per_byte('B', 12.3), 8)
+    assert_equal(inspector.items_to_unpack_per_byte('B', 1), 8)
+    assert_equal(inspector.items_to_unpack_per_byte('B', 10), 8)
+    assert_equal(inspector.items_to_unpack_per_byte('B', 12.3), 8)
      
-     assert_equal(fin.unpack_items_per_byte('h', 1), 2)
-     assert_equal(fin.unpack_items_per_byte('h', 10), 2)
-     assert_equal(fin.unpack_items_per_byte('h', 12.3), 2)
+    assert_equal(inspector.items_to_unpack_per_byte('h', 1), 2)
+    assert_equal(inspector.items_to_unpack_per_byte('h', 10), 2)
+    assert_equal(inspector.items_to_unpack_per_byte('h', 12.3), 2)
      
-     assert_equal(fin.unpack_items_per_byte('H', 1), 2)
-     assert_equal(fin.unpack_items_per_byte('H', 10), 2)
-     assert_equal(fin.unpack_items_per_byte('H', 12.3), 2)
+    assert_equal(inspector.items_to_unpack_per_byte('H', 1), 2)
+    assert_equal(inspector.items_to_unpack_per_byte('H', 10), 2)
+    assert_equal(inspector.items_to_unpack_per_byte('H', 12.3), 2)
+
+    assert_equal(inspector.items_to_unpack_per_byte('a', 1), 1)
+    assert_equal(inspector.items_to_unpack_per_byte('a', 1.1), 1)
+    assert_equal(inspector.items_to_unpack_per_byte('a', 1.9), 1)
+
+    assert_equal(inspector.items_to_unpack_per_byte('s', 2), 2)
+    assert_equal(inspector.items_to_unpack_per_byte('s', 2.1), 2)
+    assert_equal(inspector.items_to_unpack_per_byte('s', 2.9), 2)
    end
  
 end
