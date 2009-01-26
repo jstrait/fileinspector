@@ -20,6 +20,46 @@ ruby fin.rb [-bytes start:end] filename formats
     Example:
         ruby fin.rb example.txt abhs
 
+This will produce the following output:
+
+                 a          b    h        s
+===========================================
+      0:         T   00101010   45    26708
+      1:         h   00010110   86         
+      2:         i   10010110   96    29545
+      3:         s   11001110   37         
+      4:   [SPACE]   00000100   02    26912
+      5:         i   10010110   96         
+      6:         s   11001110   37     8307
+      7:   [SPACE]   00000100   02         
+      8:         a   10000110   16     8289
+      9:   [SPACE]   00000100   02         
+     10:         t   00101110   47    25972
+     11:         e   10100110   56         
+     12:         s   11001110   37    29811
+     13:         t   00101110   47         
+     14:         .   01110100   e2     3374
+     15:      [CR]   10110000   d0         
+     16:      [LF]   01010000   a0    21514
+     17:         T   00101010   45         
+     18:         e   10100110   56    29541
+     19:         s   11001110   37         
+     20:         t   00101110   47    26996
+     21:         i   10010110   96         
+     22:         n   01110110   e6    26478
+     23:         g   11100110   76         
+     24:   [SPACE]   00000100   02    12576
+     25:         1   10001100   13         
+     26:         2   01001100   23    13106
+     27:         3   11001100   33         
+     28:         .   01110100   e2     3374
+     29:      [CR]   10110000   d0         
+     30:      [LF]   01010000   a0       ..
+
+
+Parameters
+==========
+
 Bytes (Optional)
 
     Allows displaying only the part of the file between the start byte and end byte. If left out, the contents of the entire file will be displayed. Starting and ending byte indexes are zero-indexed.
