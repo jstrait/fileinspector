@@ -25,7 +25,6 @@
 class FileInspector
   BLOCK_SIZE = 512
   LOWERCASE_A = 97
-  BYTE_COLUMN_WIDTH = 8
   COLUMN_PADDING = 3
   NOT_ENOUGH_BYTES_MSG = ".."
   PRETTY_CHARS = ["[NUL]", "[SOH]", "[STX]", "[ETX]", "[EOT]", "[ENQ]", "[ACK]", "[BEL]",
@@ -70,9 +69,9 @@ class FileInspector
     }
   end
 
-  def display_header()
+  def display_header(byte_column_width)
     puts ""
-    row = " " * BYTE_COLUMN_WIDTH
+    row = " " * byte_column_width
     @column_descriptors.each {|column_descriptor|
       row += column_descriptor[:unpackStr][0].chr.rjust(column_descriptor[:displayWidth] + COLUMN_PADDING, " ")
     }
@@ -85,7 +84,9 @@ class FileInspector
       raise StandardError, "Starting byte is after than ending byte"
     end
 
-    display_header()
+    byte_column_width = end_byte.to_s.length + 1  # Add extra pad for : character
+
+    display_header(byte_column_width)
 
     end_byte += 1
     display_byte_index = start_byte
@@ -109,7 +110,7 @@ class FileInspector
 
       (0...cols[0].length).each { |row_index|
         # Output current row
-        row = "#{display_byte_index}:".rjust(BYTE_COLUMN_WIDTH, " ")
+        row = "#{display_byte_index}:".rjust(byte_column_width, " ")
         i = 0
         cols.each{|col|
           row += (" " * COLUMN_PADDING) + col[row_index].to_s.rjust(@column_descriptors[i][:displayWidth], " ")
