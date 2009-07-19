@@ -79,7 +79,7 @@ The name of the file to inspect.
 
 ### Formats
 
-The data formats to display are specified using the same formats accepted by Ruby's [`Array.pack`](http://www.ruby-doc.org/core/classes/Array.html#M002222) and [`String.unpack`](http://www.ruby-doc.org/core/classes/String.html#M000760) methods. Certain format directives are not valid, because they don't make sense in the context of FileInspector.
+The data formats to display are specified using the same formats accepted by Ruby's [Array.pack](http://www.ruby-doc.org/core/classes/Array.html#M002222) and [String.unpack](http://www.ruby-doc.org/core/classes/String.html#M000760) methods. Certain format directives are not valid, because they don't make sense in the context of FileInspector.
 
 <pre>Supported: a, B, b, C, c, D, d, E, e, F, f, G, g, H, h, I, i, L, l, N, n, Q, q, S, S, V, v
 Unsupported: @, A, M, m, P, p, U, u, w, X, x, Z</pre>
