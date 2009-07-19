@@ -1,26 +1,24 @@
-What Is It?
-===========
+## What Is It?
 
-FileInspector allows you to view the contents of a file in different data formats side-by-side. It is similar to a hex viewer, but supports additional formats such as numbers of varying sizes and endianess. It is useful for helping to reverse-engineer file formats that contain multiple data types. It was originally written to help reverse engineer the *.HUB file format used by the Hammerhead drum machine (see clawhammer.rb, http://github.com/jstrait/clawhammer/tree/master), and then cleaned up for general use.
+FileInspector allows you to view the contents of a file in different data formats side-by-side. It is similar to a hex viewer, but supports additional formats such as numbers of varying sizes and endianness. It is useful for helping to reverse-engineer file formats that contain multiple data types. It was originally written to help reverse engineer the *.HUB file format used by the Hammerhead drum machine (see [Clawhammer](http://github.com/jstrait/clawhammer/tree/master)), and then cleaned up for general use.
 
 
-How to Install
-==============
+## How to Install
 
 Two files are required for FileInspector:
-    * FileInspector.rb - Contains the FileInspector class, which implements the core functionality.
-    * fin.rb - A wrapper for FileInspector.rb which allows it to be used from the command line.
+* FileInspector.rb - Contains the FileInspector class, which implements the core functionality.
+* fin.rb - A wrapper for FileInspector.rb which allows it to be used from the command line.
 
 
-Usage
-=====
+## Usage
 
-ruby fin.rb [-bytes start:end] filename formats
+    ruby fin.rb [-bytes start:end] filename formats
 
-    Example:
-        ruby fin.rb example.txt abhsf
+Example:
 
-    This will produce the following output:
+    ruby fin.rb example.txt abhsf
+
+This will produce the following output:
 
                      a          b    h        s                        f
     ====================================================================
@@ -57,31 +55,30 @@ ruby fin.rb [-bytes start:end] filename formats
          30:      [LF]   01010000   a0       ..                         
 
 
-Parameters
-==========
+## Parameters
 
-Bytes (Optional)
+### Bytes (Optional)
 
-    Allows displaying only the part of the file between the start byte and end byte. If left out, the contents of the entire file will be displayed. Starting and ending byte indexes are zero-indexed.
+Allows displaying only the part of the file between the start byte and end byte. If left out, the contents of the entire file will be displayed. Starting and ending byte indexes are zero-indexed.
 
-    Examples:
-        ruby fin.rb -bytes 0:9 example.txt abhs
-           Display first 10 bytes of the file
-        ruby fin.rb -bytes :9 example.txt abhs
-           Same as above
-        ruby fin.rb -bytes 10: example.txt abhs
-           Display from 11th byte to end of file
-        ruby fin.rb -bytes 10:20
-           Display from 11th byte to 21st byte
-  
-File
+Examples:
 
-    The name of the file to inspect.
+_Display first 10 bytes of the file:_
+    ruby fin.rb -bytes 0:9 example.txt abhs
+_Same as above:_  
+    ruby fin.rb -bytes :9 example.txt abhs
+_Display from 11th byte to end of file_
+    ruby fin.rb -bytes 10: example.txt abhs
+_Display from 11th byte to 21st byte_
+    ruby fin.rb -bytes 10:20
 
-Formats
+### File
 
-	The data formats to display are specified using the same formats accepted by Ruby's String.pack and String.unpack methods. Certain format directives are not valid, because they don't make sense in the context of FileInspector.
+The name of the file to inspect.
 
-        Supported: a, B, b, C, c, D, d, E, e, F, f, G, g, H, h, I, i, L, l, N, n, Q, q, S, S, V, v
-        Unsupported: @, A, M, m, P, p, U, u, w, X, x, Z
+### Formats
 
+The data formats to display are specified using the same formats accepted by Ruby's String.pack and String.unpack methods. Certain format directives are not valid, because they don't make sense in the context of FileInspector.
+
+Supported: a, B, b, C, c, D, d, E, e, F, f, G, g, H, h, I, i, L, l, N, n, Q, q, S, S, V, v
+Unsupported: @, A, M, m, P, p, U, u, w, X, x, Z
