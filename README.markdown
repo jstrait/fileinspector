@@ -6,6 +6,7 @@ FileInspector allows you to view the contents of a file in different data format
 ## How to Install
 
 Two files are required for FileInspector:
+
 * FileInspector.rb - Contains the FileInspector class, which implements the core functionality.
 * fin.rb - A wrapper for FileInspector.rb which allows it to be used from the command line.
 
@@ -61,7 +62,7 @@ This will produce the following output:
 
 Allows displaying only the part of the file between the start byte and end byte. If left out, the contents of the entire file will be displayed. Starting and ending byte indexes are zero-indexed.
 
-Examples:
+**Examples:**
 
 _Display first 10 bytes of the file:_
     ruby fin.rb -bytes 0:9 example.txt abhs
@@ -80,5 +81,5 @@ The name of the file to inspect.
 
 The data formats to display are specified using the same formats accepted by Ruby's String.pack and String.unpack methods. Certain format directives are not valid, because they don't make sense in the context of FileInspector.
 
-Supported: a, B, b, C, c, D, d, E, e, F, f, G, g, H, h, I, i, L, l, N, n, Q, q, S, S, V, v
-Unsupported: @, A, M, m, P, p, U, u, w, X, x, Z
+<pre>Supported: a, B, b, C, c, D, d, E, e, F, f, G, g, H, h, I, i, L, l, N, n, Q, q, S, S, V, v
+Unsupported: @, A, M, m, P, p, U, u, w, X, x, Z</pre>
