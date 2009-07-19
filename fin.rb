@@ -68,7 +68,7 @@ def main()
   if(end_byte == nil)
     end_byte = file_contents.length - 1
   else
-    end_byte = endByte.to_i
+    end_byte = end_byte.to_i
   end
   if end_byte > file_contents.length
     puts "Warning: ending byte is greater than length of file"
